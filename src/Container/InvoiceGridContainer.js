@@ -20,7 +20,8 @@ export default class InvoiceGridContainer extends Component{
             editPkId:0,
             deleteListOfPkId:[],
             deleteDialogState:false,
-            disableDelete:true
+            disableDelete:true,
+            isNext:false
             
         }
 
@@ -47,9 +48,7 @@ export default class InvoiceGridContainer extends Component{
         this.setState({
             loading:true
         },this.dataLoad(this.state.search))
-        console.log(this.state.gridData)
-       
-        
+
     }
     
     
@@ -61,7 +60,7 @@ export default class InvoiceGridContainer extends Component{
     }
     pushCheckboxState=()=>{
         var arr = new Array();
-        console.log(this.state.gridData)
+        
         for(var i=0;i< this.state.gridData.length;i++){
             var jsonObj={pkId:null, isChecked:false}
             
@@ -69,11 +68,11 @@ export default class InvoiceGridContainer extends Component{
             jsonObj['pkId']=this.state.gridData[i].id
             var myJSON = JSON.stringify(jsonObj);
             arr.push(myJSON);
-            console.log("arr");
-            console.log(arr[i].isChecked);
+           // console.log("arr");
+            //console.log(arr[i].isChecked);
             this.setState({
                 checkedState : [...arr]
-            },()=>{console.log(this.state.checkedState[i])})
+            })
         }
     }
 
@@ -96,10 +95,10 @@ export default class InvoiceGridContainer extends Component{
             const checkedState = state.checkedState.map((val, j) => {
               if (j === index) {
                   var obj = JSON.parse(val)
-                  console.log(obj)
+                 // console.log(obj)
                   obj['isChecked']=!obj['isChecked']
                   this.changeListOfPkIds(obj['pkId'])
-                  console.log(obj['pkId'])
+              //    console.log(obj['pkId'])
                   obj=JSON.stringify(obj)
                   
                 return obj
@@ -121,8 +120,8 @@ export default class InvoiceGridContainer extends Component{
     }
     dataLoad=(search)=>{
         const axios = require('axios')
-      //  var totalPages = this.state.totalRecords/20
-       // console.log(totalPages);
+        var totalPages = this.state.totalRecords/20
+        console.log(totalPages);
         axios({
             method : 'get',
             url : 'http://localhost:8082/InvoiceManagement/loadData.do',
@@ -134,27 +133,21 @@ export default class InvoiceGridContainer extends Component{
         })
         .then((res)=>{
           //  var response = JSON.parse(res);
-            //console.log(res.data.data);
-            if(this.state.gridData===null){
+            console.log(res.data.data);
+            console.log(this.state.gridData);
+            this.state.checkedState.length=0
+            console.log(this.state.checkedState.length)
+           
              setTimeout(() => {
+                 
                 this.setState({
                     gridData:res.data.data,
                     offset:this.state.offset+20,
-                    loading:false
-                },()=>{console.log(this.state.gridData); this.pushCheckboxState()})
+                    loading:false,
+                    isNext:true,
+                },()=>{ if(this.state.gridData.length>0){this.pushCheckboxState()}})
               }, 3000);
-          }
-          else{
-            setTimeout(() => {
-                this.setState({
-                    gridData:[...this.state.gridData,...res.data.data],
-                    offset:this.state.offset+20,
-                    loading:false
-                },this.pushCheckboxState)
-              }, 3000);
-          }
-
-         
+          
         })
         .catch((er)=>{
             console.log(er);
@@ -226,7 +219,7 @@ export default class InvoiceGridContainer extends Component{
             changeEditDialogState={this.changeEditDialogState}
             deleteDialogState={this.state.deleteDialogState}
             disableDelete={this.state.disableDelete}
-           
+            isNext={this.state.isNext}
             changedeleteDialogState={this.changedeleteDialogState}
             />
         </div>

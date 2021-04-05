@@ -9,101 +9,186 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
 import { TextField , Button,CircularProgress,Checkbox } from '@material-ui/core';
-import '../customCSS/grid.css';
+
 import InfiniteScroll from "react-infinite-scroll-component";
 
 
-export default function InvoiceGridComponent(props){
+const customButtonStyle = makeStyles({
+  divCss:{
+    backgroundColor:'#402e25',
+    border: '0.1vw solid #e5b73b',
+    display :'flex'
+  },
+  root: {
+    marginTop:'3vh',
+    marginLeft:'2vw',
+    boxShadow : '0.1vw 0.1vw 0.1vw 0.1vw rgb(255,219,88,0.25)',
+    width: '6vw',
+    height:'7vh',
+    padding:'0.5vw',
+    color : '#e5b73b',
+    fontWeight :'bold',
+    background:'linear-gradient(45deg, #6d4935 30%, #a67b5b 90%)',
+    border : '0.1vw solid #7a563e',
+    "&:hover": {
+      backgroundColor: "#8B008B !important",
+      fontWeight :'bolder',
+      color:'#ffc1f3'
+    },
+    "&:disabled" :{
+      color:'#b78727',
+      fontWeight :'normal',
+      border : '0.1vw solid #805a46',
+    }
   
-  var checkedValue = false
+  },
+
+  textFieldCss:{
+   
+    marginTop:'2vh',
+      marginLeft:'55vw',
+      width: '15vw',
+      height:'9vh',
+      padding:'0.5vw',
+      color : '#bc6ff1',
+   //   border : '0.01vw solid #bc6ff1'
+  },
+  gridContainer:{
+    backgroundColor:'#402e25',
+   
+  },
  
-    const columnMap = [
-        {field:"baselineDate", headerName : "Base Line Date", width : 150},
-        {field:"businessArea", headerName : "Business Area",width : 150},
-        {field:"businessYear", headerName : "Business Year",width : 150},
-        {field:"clearDate", headerName :"clear Date",width : 150},
-        {field:"custName", headerName : "Customer Name",width : 150},
-        {field:"custNumber", headerName : "Customer Number",width : 150},
-        {field:"docCreateDate", headerName : "Document Create Date",width : 150},
-        {field:"docId", headerName : "Document Id",width : 150},
-        {field:"documentType", headerName : "Document Type",width : 150},
-        {field:"dueDate", headerName : "Due Date",width : 150},
-        {field:"invoiceCurrency", headerName : "Invoice Currency",width : 150},
-        {field:"invoiceId", headerName : "Invoice Id",width : 150},
-        {field:"isOpen", headerName : "isOpen",width : 150},
-        {field:"paymentTerms", headerName : "Payment Terms",width : 150},
-        {field:"postingDate", headerName : "Posting Date",width : 150},
-        {field:"postingId", headerName : "Posting Id",width : 150},
-        {field:"totalOpenAmt", headerName : "Total Open Amount",width : 150}
-    ]
- 
+  
+  grid:{
+   margin : '2vh 2vw 2vh 2vw',
+   overflow : 'scroll',
+   border:'0.1vw solid yellow',
+   borderRadius:'0.5vw',
+   
+   boxShadow : '0.2vw 0.2vw 0.3vw 0.4vw rgb(213, 184, 255,0.25)',
+   '&::-webkit-scrollbar': {
+    width: '1vw',
+    backgroundColor:'#1e1510',
+    borderRadius:'2vw',
+    
+  },
+  '*::-webkit-scrollbar-track': {
+    '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)'
+  },
+  '&::-webkit-scrollbar-thumb': {
+    backgroundColor: 'rgb(95, 53, 58,0.25)',
+    borderRadius:'2vw'
+  },
+   height: '80vh',
+   width : '95vw'
+  },
+
+  gridHeader:{
+    backgroundColor:'#543c30',
+    
+    height: 'auto !important'
+  },
+  gridHeaderRow :{
+    color:'#e5b73b',
+    fontWeight:'bold',
+    fontSize:'2vh',
+    height:'1vh'
+  },
+  tableBody:{
+    height:'0.1vh',
+    '&:nth-of-type(odd)': {
+      backgroundColor: "#7a5647",
       
+    },
+    '&:nth-of-type(even)': {
+      backgroundColor: "#7a5647",
+      
+    },
+    
+  },
+
+  tableCell : {
+   color :'#ffb938	',
+   
+   fontSize:'2vh',
+   padding:0,
+   height: 'auto !important'
+  }
+});
+
+
+export default function InvoiceGridComponent(props){
+ // console.log(props)
+  const buttonStyle = customButtonStyle();
+  //console.log
+  var checkedValue = false
+
         return (
             props.gridData===null?<div><CircularProgress color="secondary"/></div>:
           <div style={{ maxHeight:'100vh'}}>
             
-              <div>
-              <TextField id="standard-search" label="Search Invoice Id" type="search" 
-              variant="outlined" className="textFieldCss"
-              name="search"
-              onChange={(event)=>{props.changeValue(event)}}/>
-              <Button variant="outlined" color="secondary" className="textFieldstyle" onClick={props.changeDialogState}>
+              <div className={buttonStyle.divCss}>
+              <Button variant="outlined" color="secondary" className={buttonStyle.root} onClick={props.changeDialogState}>
                  Add
                 </Button>
-                <Button variant="outlined" color="secondary" className="textFieldCss" disabled={props.disableEdit} onClick={props.changeEditDialogState}>
+                <Button variant="outlined" color="secondary" className={buttonStyle.root} disabled={props.disableEdit} onClick={props.changeEditDialogState}>
                  Edit
                 </Button>
-                <Button variant="outlined" color="secondary" className="textFieldCss"
+                <Button variant="outlined" color="secondary" className={buttonStyle.root}
                 disabled={props.disableDelete}
                 onClick={props.changedeleteDialogState}>
                  Delete
                 </Button>
+                <TextField id="standard-search" label="Search Invoice Id" type="search" 
+              variant="outlined" className={buttonStyle.textFieldCss}
+              name="search"
+              onChange={(event)=>{props.changeValue(event)}}/>
                 </div>
-                <TableContainer component={Paper} >
-             
-              <Table  className="grid" >
-              <div d="scrollableDiv" style={{overflowY: 'scroll',maxHeight:'90vh'}}>
+                <TableContainer component={Paper} className={buttonStyle.gridContainer} >
+               
+              <Table  >
+              <div id="scrollableDiv"  className={buttonStyle.grid} >
               <InfiniteScroll
-            dataLength={200}
+            dataLength={props.gridData}
             next={()=>props.dataLoad(props.search)}
-            hasMore={false}
+            hasMore={props.isNext}
             loader={<CircularProgress color="secondary"></CircularProgress>}
             scrollableTarget="scrollableDiv"
           >
-              <TableHead className="gridheader">
-              <TableRow>
+              <TableHead className={buttonStyle.gridHeader}>
+              <TableRow >
               
               <TableCell><Checkbox 
               checked={props.checked} onChange={(e)=>{props.changeCheckedState(e)}} /></TableCell>
-              <TableCell align="center" >Baseline Date</TableCell>
-              <TableCell align="center">BusinessArea</TableCell>
-              <TableCell align="center">BusinessYear</TableCell>
-              <TableCell align="center">clearDate</TableCell>
-              <TableCell align="center">custName</TableCell>
-              <TableCell align="center">custNumber</TableCell>
-              <TableCell align="center">docCreateDate</TableCell>
-              <TableCell align="center">docId</TableCell>
-              <TableCell align="center">documentType</TableCell>
-              <TableCell align="center">dueDate</TableCell>
-              <TableCell align="center">invoiceCurrency</TableCell>
-              <TableCell align="center">invoiceId</TableCell>
-              <TableCell align="center">isOpen</TableCell>
-              <TableCell align="center">paymentTerms</TableCell>
-              <TableCell align="center">postingDate</TableCell>
-              <TableCell align="center">postingId</TableCell>
-              <TableCell align="center">totalOpenAmt</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Baseline Date</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Business Area</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Business Year</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Clear Date</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Customer Name</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Customer Number</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Document Create Date</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Document Id</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Document Type</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Due Date</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Invoice Currency</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Invoice Id</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Status</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Payment Terms</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Posting Date</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Posting Id</TableCell>
+              <TableCell align="center" className={buttonStyle.gridHeaderRow}>Total Open Amount</TableCell>
 
              </TableRow>
             </TableHead>
-            <TableBody >
+            <TableBody  >
             
        
             
           {
          
-            
+          props.gridData.length>0?
           props.gridData.map((value,index) => (
-            <TableRow key={index}>
+            <TableRow key={index} className={buttonStyle.tableBody}>
              
               {
                props.checkedState.length > 0 ?
@@ -113,29 +198,31 @@ export default function InvoiceGridComponent(props){
               <TableCell><Checkbox checked={checkedValue} onChange={()=>{
               
               props.updateCheckedState(index);
+              
              } 
               }/></TableCell>
-              <TableCell align="center">{value.baselineDate}</TableCell>
-              <TableCell align="center">{value.businessArea}</TableCell>
-              <TableCell align="center">{value.businessYear}</TableCell>
-              <TableCell align="center">{value.clearDate}</TableCell>
-              <TableCell align="center">{value.custName}</TableCell>
-              <TableCell align="center">{value.custNumber}</TableCell>
-              <TableCell align="center">{value.docCreateDate}</TableCell>
-              <TableCell align="center">{value.docId}</TableCell>
-              <TableCell align="center">{value.documentType}</TableCell>
-              <TableCell align="center">{value.dueDate}</TableCell>
-              <TableCell align="center">{value.invoiceCurrency}</TableCell>
-              <TableCell align="center">{value.invoiceId}</TableCell>
-              <TableCell align="center">{value.isOpen}</TableCell>
-              <TableCell align="center">{value.paymentTerms}</TableCell>
-              <TableCell align="center">{value.postingDate}</TableCell>
-              <TableCell align="center">{value.postingId}</TableCell>
-              <TableCell align="center">{value.totalOpenAmt}</TableCell>
+              <TableCell align="center" className={buttonStyle.tableCell}>{value.baselineDate}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.businessArea}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.businessYear}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.clearDate}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.custName}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.custNumber}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.docCreateDate}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.docId}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.documentType}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.dueDate}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.invoiceCurrency}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.invoiceId}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.isOpen}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.paymentTerms}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.postingDate}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.postingId}</TableCell>
+              <TableCell align="center"className={buttonStyle.tableCell}>{value.totalOpenAmt}</TableCell>
 
              </TableRow>
              ))
-           
+             :
+             <h1>No records found</h1>
             
              }
              {props.pushCheckboxState}
@@ -143,8 +230,9 @@ export default function InvoiceGridComponent(props){
            </TableBody>
            </InfiniteScroll>
            </div>
+
               </Table>
-           
+             
               </TableContainer>
               
           </div>
