@@ -1,6 +1,8 @@
 import react, { Component } from 'react';
 import AddComponent from '../Component/AddDialog';
 import Alert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
+
 export default class AddContainer extends Component{
    constructor(props){
        super(props)
@@ -12,9 +14,28 @@ export default class AddContainer extends Component{
         dueDate:null,
         docCreateDate:null,
         isOpen:0,
+        snackBarState:false,
+        message:undefined,
+        msgSuccessState:false,
+        position:{
+            vertical:'top',
+            horizontal :'center'
+        }
        }
        
    }
+   changeTrueSnackBarState=(msg)=>{
+       this.setState({
+           snackBarState:true,
+           message:msg
+       })
+   }
+   changeFalseSnackBarState=()=>{
+    this.setState({
+        snackBarState:false,
+        
+    })
+}
    changeState=(event)=>{
      this.setState({
          [event.target.name]:event.target.value
@@ -70,20 +91,45 @@ changeDocCreateDate=(selectedDate)=>{
      })
      .then((res)=>{
          console.log(res);
-         return <Alert severity="success">This is a success alert — check it out!</Alert>
+         if(res.data.status===true){
+         this.changeTrueSnackBarState("Successfully saved the invoice Data!");
+         this.setState({
+            msgSuccessState:true,
+         })
+         
+        }
+        else{
+            this.changeTrueSnackBarState("Could not save the invoice data!");
 
+        }
+       
      })
      .catch((err)=>{
          console.log(err);
+         this.changeTrueSnackBarState("Could not save the invoice data!");
      })
   }
-  
+   
    render(){
-       //console.log("Add");
-       //console.log(this.props);
-      // console.log()
+      
+     const {vertical,horizontal}=this.state.position
        return(
            <div>
+               {
+                   this.state.snackBarState===true?
+                   <Snackbar anchorOrigin={ {vertical,horizontal}} style={{width:'20vw', height:'7vh'}} open={this.state.snackBarState} autoHideDuration={6000} onClose={this.changeFalseSnackBarState}>
+                       {
+                           this.state.msgSuccessState===true?
+                           <Alert severity="success">
+                           {this.state.message}
+                          </Alert>:
+                          <Alert severity="error">
+                          {this.state.message}
+                         </Alert>
+                       }
+                      
+                   </Snackbar>:null
+               }
                <AddComponent
               addState={this.props.dialogState}
               changeDialogState={this.props.changeDialogState}
@@ -92,7 +138,8 @@ changeDocCreateDate=(selectedDate)=>{
               changeDocCreateDate={this.changeDocCreateDate}
               dueDate={this.state.dueDate}
               docCreateDate={this.state.docCreateDate}
-              save={this.save}/>
+              save={this.save}
+              />
            </div>
        )
    }
